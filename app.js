@@ -39,7 +39,7 @@ app.get('/', function (req, res) {
 const port = process.env.PORT || 3000;
 
 app.listen(port, function () {
-  console.log('Example app listening on port 3000!');
+  console.log(`Example app listening on port ${port}!`);
 });
 
 const auth = admin.auth();
@@ -89,3 +89,13 @@ app.get('/hello', authenticate, (req, res) => {
   // The user's ID is available in req.user.uid
   res.send(`Hello, user ${req.user.uid}`);
 });
+
+
+app.post('/pay', async (req, res) => {
+  const data = req.body;
+
+  await db.collection('payments').add(data);
+
+  res.status(200).send('Payment successful');
+});
+
