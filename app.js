@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url); // construct the require method
 // const serviceAccount = require('./firebase.json');
 require('dotenv').config();
 
+
 const serviceAccount = {
   type: process.env.type,
   project_id: process.env.project_id,
@@ -31,6 +32,10 @@ admin.initializeApp({
 const db = admin.firestore();
 
 const app = express();
+
+const cors = require('cors');
+app.use(cors());
+
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
