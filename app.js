@@ -37,7 +37,7 @@ const cors = require('cors');
 
 const corsOptions = {
   credentials: true,
-  origin: [/^https:\/\/.*\.netlify\.app$/, "http://localhost:3000", "http://localhost:3005", "https://*.authgate.work"],
+  origin: '*',
 };
 
 app.use(cors(corsOptions));
