@@ -36,10 +36,8 @@ const app = express();
 const cors = require('cors');
 
 const corsOptions = {
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
+  credentials: true,
+  origin: [/^https:\/\/.*\.netlify\.app$/, "http://localhost:3000", "http://localhost:3005"],
 };
 
 app.use(cors(corsOptions));
