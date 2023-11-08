@@ -36,7 +36,8 @@ const app = express();
 const cors = require('cors');
 
 const corsOptions = {
-  origin: '*',
+  credentials: true,
+  origin: [/^https:\/\/.*\.authgate\.work$/, "http://localhost:3000", "https://localhost:3000", "http://localhost:3005", "https://localhost:3005"],
 };
 
 app.use(cors(corsOptions));
@@ -94,12 +95,9 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-// Use the middleware in your routes
 app.get('/hello', authenticate, (req, res) => {
-  // The user's ID is available in req.user.uid
-  res.send(`Hello, user ${req.user.uid}`);
+  res.send(`Hello`);
 });
-
 
 app.post('/pay', async (req, res) => {
   const data = req.body;
