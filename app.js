@@ -35,12 +35,23 @@ const app = express();
 
 const cors = require('cors');
 
-const corsOptions = {
-  credentials: true,
-  origin: [/^https:\/\/.*\.authgate\.work$/, "http://localhost:3000", "https://localhost:3000", "http://localhost:3005", "https://localhost:3005"],
-};
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
 
-app.use(cors(corsOptions));
+    // Check if the origin matches the allowed sources
+    const allowedSources = ['http://127.0.0.1', 'http://localhost'];
+    const pattern = /^https?:\/\/(\w+\.)?authgate\.work$/;
+
+    if (allowedSources.includes(origin) || pattern.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 app.get('/', function (req, res) {
