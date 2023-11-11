@@ -21,6 +21,8 @@ const serviceAccount = {
   universe_domain: process.env.universe_domain,
 };
 
+const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
+
 console.log(`serviceAccount ${JSON.stringify(serviceAccount)}`)
 
 // var serviceAccountJson = JSON.parse(myJsonString);
@@ -116,8 +118,35 @@ app.get('/hello', authenticate, (req, res) => {
   res.send(`Hello`);
 });
 
+const validateRecaptcha = async (req, res) => {
+  const recaptchaToken = req.body.recaptchaToken;
+
+  if (!recaptchaToken) {
+    return res.status(400).json({ success: false, message: 'No reCAPTCHA token provided.' });
+  }
+
+  try {
+    const recaptchaResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret: recaptchaSecretKey,
+        response: recaptchaToken
+      }
+    });
+
+    if (recaptchaResponse.data.success) {
+      res.json({ success: true });
+    } else {
+      res.status(400).json({ success: false, message: 'Invalid reCAPTCHA. Please try again.' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error verifying reCAPTCHA.' });
+  }
+};
+
 app.post('/pay', async (req, res) => {
   const data = req.body;
+
+  validateRecaptcha(req, res);
 
   await db.collection('payments').add(data);
 
