@@ -40,10 +40,15 @@ app.use(cors({
     if (!origin) return callback(null, true);
 
     // Check if the origin matches the allowed sources
-    const allowedSources = ['http://127.0.0.1', 'http://localhost'];
+    const allowedSources = [
+      'http://127.0.0.1', 'http://localhost',
+      'https://127.0.0.1', 'https://localhost'
+    ];
     const pattern = /^https?:\/\/(\w+\.)?authgate\.work$/;
 
-    if (allowedSources.includes(origin) || pattern.test(origin)) {
+    if (allowedSources.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
+      callback(null, true);
+    } else if (pattern.test(origin)) {
       callback(null, true);
     } else {
       console.log(`origin ${origin}`)
