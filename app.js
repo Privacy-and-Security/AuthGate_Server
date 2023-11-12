@@ -133,20 +133,24 @@ const validateRecaptcha = async (req, res) => {
       }
     });
 
-    if (recaptchaResponse.data.success) {
-      res.json({ success: true });
-    } else {
+    if (!recaptchaResponse.data.success) {
       res.status(400).json({ success: false, message: 'Invalid reCAPTCHA. Please try again.' });
+      return false;
     }
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error verifying reCAPTCHA.' });
+    return false;
   }
+
+  return true;
 };
 
 app.post('/pay', async (req, res) => {
   const data = req.body;
 
-  validateRecaptcha(req, res);
+  if (!await validateRecaptcha(req, res)) {
+    return;
+  }
 
   await db.collection('payments').add(data);
 
