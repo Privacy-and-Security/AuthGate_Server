@@ -5,6 +5,7 @@ import { createRequire } from 'module'; // Bring in the ability to create the 'r
 const require = createRequire(import.meta.url); // construct the require method
 // const serviceAccount = require('./firebase.json');
 require('dotenv').config();
+import axios from 'axios';
 
 
 const serviceAccount = {
@@ -138,6 +139,7 @@ const validateRecaptcha = async (req, res) => {
       return false;
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: 'Error verifying reCAPTCHA.' });
     return false;
   }
