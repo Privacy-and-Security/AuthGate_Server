@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url); // construct the require method
 // const serviceAccount = require('./firebase.json');
 require('dotenv').config();
 import axios from 'axios';
+import CryptoJS from 'crypto-js';
 
 
 const serviceAccount = {
@@ -23,6 +24,7 @@ const serviceAccount = {
 };
 
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
+const aesDecryptionSecretKey = process.env.AES_SECRET_KEY;
 
 console.log(`serviceAccount ${JSON.stringify(serviceAccount)}`)
 
@@ -119,8 +121,8 @@ app.get('/hello', authenticate, (req, res) => {
   res.send(`Hello`);
 });
 
-const validateRecaptcha = async (req, res) => {
-  const recaptchaToken = req.body.recaptchaToken;
+const validateRecaptcha = async (data, res) => {
+  const recaptchaToken = data.recaptchaToken;
 
   if (!recaptchaToken) {
     return res.status(400).json({ success: false, message: 'No reCAPTCHA token provided.' });
@@ -148,9 +150,12 @@ const validateRecaptcha = async (req, res) => {
 };
 
 app.post('/pay', async (req, res) => {
-  const data = req.body;
-
-  if (!await validateRecaptcha(req, res)) {
+  const data = JSON.parse(
+    CryptoJS.AES.decrypt(
+      req.body.encrypted, aesDecryptionSecretKey)
+      .toString(CryptoJS.enc.Utf8));
+  
+  if (!await validateRecaptcha(data, res)) {
     return;
   }
 
