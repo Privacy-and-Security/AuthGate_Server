@@ -75,9 +75,9 @@ const auth = admin.auth();
 app.use(bodyParser.json());
 
 app.post('/createUser', async (req, res) => {
-  const { email, password } = req.body;
-
   try {
+    const { email, password } = req.body;
+
     const user = await auth.createUser({
       password: password,
       email: email,
@@ -93,9 +93,9 @@ app.post('/createUser', async (req, res) => {
   }
 });
 
-app.post('/login', urlencodedParser, (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
 
   if (username === 'abc' && password === '123456') {
     console.log('Login successfully!');
@@ -137,3 +137,14 @@ app.post('/pay', async (req, res) => {
   res.status(200).send('Payment successful');
 });
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+
+  res.status(500);
+
+  res.json({
+    error: {
+      message: err.message,
+    }
+  });
+});
