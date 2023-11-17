@@ -93,6 +93,19 @@ app.post('/createUser', async (req, res) => {
   }
 });
 
+app.post('/login', urlencodedParser, (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if (username === 'abc' && password === '123456') {
+    console.log('Login successfully!');
+    res.status(200).send('Login successfully!');
+  } else {
+    console.log('Wrong password. Provided:', password);
+    res.status(401).send('Wrong username or password.'); // 401 表示未授权
+  }
+});
+
 
 // Middleware to authenticate requests
 const authenticate = async (req, res, next) => {
