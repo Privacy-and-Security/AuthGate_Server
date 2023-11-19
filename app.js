@@ -125,7 +125,7 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-app.get('/hello', authenticate, (req, res) => {
+app.get('/hello', (req, res) => {
   res.send(`Hello`);
 });
 
