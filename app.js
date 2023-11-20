@@ -137,7 +137,7 @@ const validateRecaptcha = async (data, res) => {
     });
 
     if (!recaptchaResponse.data.success) {
-      res.status(400).json({ success: false, message: 'Invalid reCAPTCHA. Please try again.' });
+      res.status(400).json({ success: false, message: `Invalid reCAPTCHA. Please try again. Error code: ${recaptchaResponse.data['error-codes']}` });
       return false;
     }
   } catch (error) {
@@ -154,7 +154,7 @@ app.post('/pay', async (req, res) => {
     CryptoJS.AES.decrypt(
       req.body.encrypted, aesDecryptionSecretKey)
       .toString(CryptoJS.enc.Utf8));
-  
+
   if (!await validateRecaptcha(data, res)) {
     return;
   }
