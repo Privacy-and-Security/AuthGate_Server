@@ -8,6 +8,8 @@ require('dotenv').config();
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const stripe = require('stripe')(STRIPE_SECRET_KEY);
 
 const serviceAccount = {
   type: process.env.type,
@@ -22,6 +24,8 @@ const serviceAccount = {
   client_x509_cert_url: process.env.client_x509_cert_url,
   universe_domain: process.env.universe_domain,
 };
+
+
 
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 const aesDecryptionSecretKey = process.env.AES_SECRET_KEY;
@@ -164,3 +168,22 @@ app.post('/pay', async (req, res) => {
   res.status(200).send('Payment successful');
 });
 
+app.post('/create-payment-intent', async (req, res) => {
+  const { amount, currency, paymentMethodId } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: currency,
+      payment_method: paymentMethodId,
+      confirm: true,
+      'automatic_payment_methods[enabled]': true,
+      'automatic_payment_methods[allow_redirects]': `never`,
+    });
+
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+});
